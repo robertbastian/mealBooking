@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oriel College Meal Booking System</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+  <style type="text/css">
+    [class*="col-"] 
+    {
+      padding-top: 15px;
+      padding-bottom: 50px;
+    }
+    .row:target 
+    {
+      background-color: #ffe;
+    }
+    .invisible
+    {
+      opacity: 0.0;
+    }
+    .brunch
+    {
+      margin-bottom: 159px;
+    }
+  </style>
+</head>
+<body style="padding: 70px 0px 80px 0px" class="text-center" data-spy="scroll" data-target="#navbar">
+<script type="text/javascript">var user = <%=("'"+@me.user+"'").html_safe%></script>
+<!-- Navbar -->
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="navbar">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="javascript:void()">
+        <img height=30 alt="Oriel Crest" src="http://www.oriel.ox.ac.uk/sites/default/files/ORIEL%20CREST%20FEB%202011_2%20copy%20web.jpg"/>
+        Oriel Meal Booking System
+      </a>
+    </div>
+    <ul class="nav navbar-nav" id="nav">
+    <li id="loadMoreButton"><a href="javascript:loadMore()"> More &gt;</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="javascript:$('#settingsModal').modal()">Settings</a></li>
+      <li><a href="logout">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<!--
+<div class="navbar navbar-default navbar-fixed-top" role="navigation" id="navbar">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+        <img height=30 alt="Oriel Crest" src="http://www.oriel.ox.ac.uk/sites/default/files/ORIEL%20CREST%20FEB%202011_2%20copy%20web.jpg"/>
+        Oriel Meal Booking System
+      </a>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-tabs">
+        <li><a href="#week1">Week 1</a></li>
+        <li><a href="#w">Week 2</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="javascript:$('#settingsModal').modal()">Settings</a></li>
+        <li><a href="logout">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</div>-->
+
+<div class="container" id="container" style="width:80%">
+</div>
+
+<%= image_tag("loading.gif", :id => "spinner", :class => "invisible") %>
+
+<!-- Settings -->
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Settings</h4>
+      </div>
+      <div class="modal-body center-block">
+        <table class="table text-left">
+          <tr><td>Name</td><td><%=@me.first_name+" "+@me.last_name%></td><tr>
+          <tr><td>Username</td><td><%=@me.user%></td><tr>
+          <tr><td>Email</td><td><%=@me.email%></td></tr>
+          <tr><td>Allowed Guests</td><td>
+            <%if @me.guest %>
+              <span class='glyphicon glyphicon-ok'></span>
+            <% else %>
+              <span class='glyphicon glyphicon-error'></span>
+            <% end %>
+          </td></tr>
+          <tr><td>Vegetarian</td><td>
+            <div class="btn-group" data-toggle="buttons" id="veggie">
+              <% if (@me.vegetarian) %>
+              <label class="btn btn-primary active" onClick="setVeggie(true)">
+              <% else %>
+              <label class="btn btn-primary" onClick="setVeggie(true)">
+              <% end %>
+                <input type="radio" value=1>Yes
+              </label>
+              <% if (!@me.vegetarian) %>
+              <label class="btn btn-primary active" onClick="setVeggie(false)">
+              <% else %>
+              <label class="btn btn-primary" onClick="setVeggie(false)">
+              <% end %>                
+                <input type="radio" value=0>No
+              </label>
+            </div>
+          </td></tr>
+        </table>
+      </div>
+      <!--<div class="modal-footer">
+        <p class="text-center"> With the exception of the fields marked with an asterisk, all of the information held in this page is derived directly from the main University Card database. Information is updated overnight each day from the card database, so if something here is incorrect, you should get your card updated.</p>
+      </div>-->
+    </div>
+  </div>
+</div>
+<!-- List -->
+<div class="modal fade" id="listModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="listLabel"></h4>
+      </div>
+      <div class="modal-body">
+        <h4 id="noBookings"><small>No bookings yet</small></h4>
+        <h4 id="bookingsFail"><small>Couldn't load list</small></h4>
+        <table class="table table-striped text-left">
+        <thead><tr><th>First Name</th><th>Last Name</th><th>Places</th></tr></thead>
+        <tbody id="listTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+</body>
+</html>

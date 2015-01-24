@@ -1,0 +1,84 @@
+<div class="row" id=<%="week"+@week%>>
+  <% @meals.each do |entry| %>
+    <% meals = entry.last %>
+    <% date = entry.first %>
+    <%= content_tag :div, :class => ("col-md-2"), :style => ("opacity:"+(if date < Date.today then "0.7" else "1.0" end)) do %>
+      <h3> 
+        <%=(date.strftime("%A"))%><br>
+        <small><%=(date.strftime("%b %d"))%></small>
+      </h3>
+      <% if meals != false %>
+        <% meals.each do |entry| %>
+        <% meal = entry[0]; totalBookings=entry[1]; myBookings=entry[2] %>
+        <% c = "'panel panel-default"+(if meal[:kind] == 0 then " brunch'" else "'" end) %>
+          <div class=<%=raw c%>>
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <% if meal[:name] %>
+                    <%= meal[:name] %>
+                <% else %>
+                    <%= (["Brunch","Lunch","Informal Hall","Formal Hall"][meal[:kind]])%>
+                <% end %>
+              </h3>              
+            </div>
+            <% if meal[:kind] != 0 #BRUNCH %>
+              <div class="panel-body">
+                <% if meal[:menu] %>
+                    <% JSON.parse(meal[:menu]).each {|entry| %>
+                      <%= raw ("<p>"+entry.sub(%r{V$},"<span class='glyphicon glyphicon-leaf'></span>")+"</p>") %>
+                <% } else %>
+                    <h4><small>Menu not yet available</small></h4>
+                <% end %>
+              </div>
+            <% end %>
+            <% if meal[:kind] != 1 #LUNCH %>
+              <% placesLeft = (meal[:capacity]-totalBookings).to_s
+                 placesTotal = meal[:capacity].to_s %>
+              <% if meal[:kind] == 0 # brunch
+                  bookingDeadline = (date.to_time + 10.hours).to_datetime
+                 elsif date.sunday? 
+                  bookingDeadline = (date.to_time - 2.days + 11.hours).to_datetime
+                 else
+                  bookingDeadline = (date.to_time + 11.hours).to_datetime
+                 end
+                 disable = bookingDeadline < DateTime.now
+                 disableButton =if disable then "disabled='disabled'" else "" end %>
+              <div class="panel-footer" style='padding: 10px;position:relative;; '>
+                <%= content_tag :div, :class => ("btn-group "+if myBookings == 0 then "hidden" else "" end) do %>
+                  <button type="button" class="btn btn-sm btn-success" <%=disableButton%> onclick=<%="javascript:editBooking(#{meal[:id]})"%>>
+                    Booked
+                  </button>
+                  <button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" <%=disableButton%>>
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href=<%="javascript:editBooking(#{meal[:id]})"%>>Edit booking</a></li>
+                    <li><a href=<%="javascript:deleteBooking(#{meal[:id]})"%>>Delete booking</a></li>
+                  </ul>
+                <% end %>
+                <%= content_tag :div, :class => ("btn-group "+if myBookings > 0 then "hidden " else "" end) do %>
+                  <button type="button" class="btn btn-sm btn-default" <%=disableButton%> onclick=<%="javascript:bookPreset(#{meal[:id]})"%>>
+                    Book
+                  </button>
+                  <button type="button" class="btn btn-sm btn-default dropdown-toggle" <%=disableButton%> data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href=<%="javascript:nonDefaultBooking(#{meal[:id]})"%>>
+                      Book <%=if @me[:vegetarian] then "normal" else "vegetarian" end %> place</a></li>
+                    <li><a href=<%="javascript:customBooking(#{meal[:id]})"%>>Book more places</a></li>
+                  </ul>
+                <% end %>
+                  <div><h5 class="places" id="#<%=meal[:id]%>" style="position:relative; top:-5px; bottom:-20px; height: 0; "><small><%=placesLeft%> / <%=placesTotal%> </small></h5></div>
+              </div>
+            <% end %>
+           </div>
+        <% end %>
+      <% else %>
+        <h4><small>Booking not yet available</small></h4>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

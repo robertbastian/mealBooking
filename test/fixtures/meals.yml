@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2014-05-02
+  type: 9.99
+  name: MyString
+  menu: MyString
+  capacity: 9.99
+
+two:
+  date: 2014-05-02
+  type: 9.99
+  name: MyString
+  menu: MyString
+  capacity: 9.99

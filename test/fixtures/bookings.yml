@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  meal_id: 
+  user_id: 
+  vegetarian: false
+
+two:
+  meal_id: 
+  user_id: 
+  vegetarian: false
